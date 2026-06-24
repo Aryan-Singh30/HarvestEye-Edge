@@ -1,7 +1,7 @@
 class HarvestEyeClient {
     constructor() {
         // Use relative path so Nginx reverse proxy handles it
-        this.apiBaseUrl = '/api/v1';
+        this.apiBaseUrl = 'https://harvesteye-api-xxxx.onrender.com/api/v1';
     }
 
     async scanImage(file) {
