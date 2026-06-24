@@ -14,8 +14,8 @@ venv/
 env/
 
 # ONNX models (large files)
-models/*.onnx
-models/*.pth
+# models/*.onnx
+# models/*.pth
 !models/.gitkeep
 
 # Dataset
