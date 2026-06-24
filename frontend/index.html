@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HarvestEye-Edge | AI Crop Diagnostics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-content">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-leaf"></i> HarvestEye-Edge
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="active">Scanner</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="api-docs.html">API</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header style="margin-top: 32px; text-align: center;">
+            <h1>Real-Time Crop Defect Detection</h1>
+            <p style="color: var(--text-secondary); max-width: 600px; margin: 8px auto;">
+                Sub-50ms CPU inference powered by ONNX INT8 Quantization. 
+                Upload an image or use your camera to instantly detect diseases.
+            </p>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Left Column: Upload -->
+            <div class="card">
+                <h2 class="card-title"><i class="fa-solid fa-camera"></i> Image Input</h2>
+                
+                <div id="uploadZone" class="upload-zone">
+                    <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                    <h3>Drag & Drop Leaf Image</h3>
+                    <p style="color: var(--text-secondary); margin: 8px 0 16px;">or click to browse files</p>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button class="btn" onclick="document.getElementById('fileInput').click()">
+                            <i class="fa-solid fa-folder-open"></i> Browse Files
+                        </button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('cameraInput').click()">
+                            <i class="fa-solid fa-camera"></i> Use Camera
+                        </button>
+                    </div>
+                    
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden">
+                </div>
+
+                <!-- Edge Simulator Panel -->
+                <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border);">
+                    <h3 style="font-size: 1rem; margin-bottom: 12px;">Deployment Target (Simulator)</h3>
+                    <select id="simulatorTarget" style="width: 100%; padding: 10px; border-radius: var(--radius); border: 1px solid var(--border); font-family: inherit;">
+                        <option value="edge_cpu">Edge CPU / Gateway (INT8 Quantized) - Target < 50ms</option>
+                        <option value="cloud_gpu">Cloud Server (FP32) - Include network latency</option>
+                        <option value="rpi">Raspberry Pi 4 - Constrained Environment</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Right Column: Results -->
+            <div class="card">
+                <h2 class="card-title"><i class="fa-solid fa-microscope"></i> Analysis Results</h2>
+                
+                <div id="loadingState" class="hidden" style="text-align: center; padding: 40px 0;">
+                    <div class="loading-spinner"></div>
+                    <p style="color: var(--text-secondary); font-weight: 500;">Running INT8 inference on Edge Node...</p>
+                </div>
+
+                <div id="emptyState" style="text-align: center; padding: 40px 0; color: var(--text-secondary);">
+                    <i class="fa-solid fa-image" style="font-size: 48px; opacity: 0.3; margin-bottom: 16px;"></i>
+                    <p>Awaiting image input...</p>
+                </div>
+
+                <div id="resultsState" class="hidden">
+                    <div class="result-header">
+                        <div>
+                            <div class="disease-name" id="diseaseName">Tomato Early Blight</div>
+                            <div style="color: var(--text-secondary); font-size: 0.875rem;" id="timestamp">Just now</div>
+                        </div>
+                        <div class="confidence-badge" id="confidenceBadge">98.5% Confidence</div>
+                    </div>
+
+                    <!-- Heatmap Overlay -->
+                    <div class="image-container">
+                        <img id="previewImage" src="" alt="Analyzed Leaf">
+                        <canvas id="heatmapCanvas"></canvas>
+                    </div>
+
+                    <!-- Latency Flame Chart -->
+                    <div class="flame-chart">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-weight: 600; font-size: 0.875rem;">Inference Latency Breakdown</span>
+                            <span class="mono" id="totalLatency" style="font-weight: 700; color: var(--primary);">42.5 ms</span>
+                        </div>
+                        
+                        <div class="flame-bar-container" id="flameContainer">
+                            <div class="flame-segment flame-prep" id="barPrep" style="width: 10%" title="Preprocessing"></div>
+                            <div class="flame-segment flame-inf" id="barInf" style="width: 80%" title="ONNX Inference"></div>
+                            <div class="flame-segment flame-post" id="barPost" style="width: 10%" title="Postprocessing"></div>
+                        </div>
+                        
+                        <div class="latency-legend">
+                            <div class="legend-item"><div class="legend-color flame-prep"></div> Prep (<span id="lblPrep">3.2</span>ms)</div>
+                            <div class="legend-item"><div class="legend-color flame-inf"></div> ONNX INT8 (<span id="lblInf">38.1</span>ms)</div>
+                            <div class="legend-item"><div class="legend-color flame-post"></div> Post (<span id="lblPost">1.2</span>ms)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    <script src="js/upload.js"></script>
+    <script src="js/heatmap.js"></script>
+    <script src="js/flamechart.js"></script>
+    <script src="js/simulator.js"></script>
+</body>
+</html>
