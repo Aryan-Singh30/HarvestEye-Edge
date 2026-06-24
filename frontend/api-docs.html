@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Docs | HarvestEye-Edge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-content">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-leaf"></i> HarvestEye-Edge
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Scanner</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="api-docs.html" class="active">API</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 32px; max-width: 800px;">
+        <header style="margin-bottom: 24px;">
+            <h2>API Documentation</h2>
+            <p style="color: var(--text-secondary);">Integrate HarvestEye-Edge into your own applications, IoT gateways, or mobile apps.</p>
+        </header>
+
+        <div class="card" style="margin-bottom: 24px;">
+            <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px;">
+                <span style="background-color: var(--primary); color: white; padding: 4px 8px; border-radius: 4px; font-weight: 700; font-size: 0.875rem;">POST</span>
+                <h3 style="font-family: 'JetBrains Mono', monospace;">/api/v1/scan</h3>
+            </div>
+            
+            <p style="margin-bottom: 16px;">Uploads an image for disease detection and classification. Returns detailed probabilities and processing latency.</p>
+            
+            <h4>Request (cURL)</h4>
+            <div style="background-color: var(--surface-dark); color: white; padding: 16px; border-radius: var(--radius); overflow-x: auto; margin-bottom: 16px;" class="mono">
+curl -X POST http://localhost:8000/api/v1/scan \
+  -H "accept: application/json" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@leaf.jpg"
+            </div>
+
+            <h4>Response Example</h4>
+            <div style="background-color: var(--surface-dark); color: #A6E22E; padding: 16px; border-radius: var(--radius); overflow-x: auto;" class="mono">
+{
+  "scan_id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
+  "defect_class": "Tomato_Early_blight",
+  "confidence": 0.9472,
+  "probabilities": {
+    "Apple_scab": 0.002,
+    "Tomato_Early_blight": 0.9472,
+    "Healthy": 0.012,
+    "...": "..."
+  },
+  "latency": {
+    "preprocessing_ms": 3.2,
+    "inference_ms": 28.5,
+    "postprocessing_ms": 1.1,
+    "total_ms": 32.8
+  },
+  "timestamp": "2026-06-23T08:30:00Z"
+}
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; color: var(--text-secondary);">
+            <p>For the full OpenAPI/Swagger UI, run the backend and visit <a href="http://localhost:8000/docs" style="color: var(--primary);">http://localhost:8000/docs</a></p>
+        </div>
+    </div>
+</body>
+</html>
