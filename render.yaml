@@ -1,0 +1,18 @@
+databases:
+  - name: harvesteye-db
+    plan: free
+
+services:
+  - type: web
+    name: harvesteye-api
+    env: docker
+    dockerfilePath: ./app/Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: harvesteye-db
+          property: connectionString
+      - key: MODEL_PATH
+        value: /app/models/classifier_int8.onnx
