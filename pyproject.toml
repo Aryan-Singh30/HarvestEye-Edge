@@ -1,0 +1,22 @@
+[project]
+name = "harvesteye-edge"
+version = "1.0.0"
+description = "AI-powered crop defect detection at the edge — sub-50ms inference on CPU"
+requires-python = ">=3.11"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
+
+[tool.ruff.isort]
+known-first-party = ["app", "training"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
