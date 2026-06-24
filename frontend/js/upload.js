@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const emptyState = document.getElementById('emptyState');
     const loadingState = document.getElementById('loadingState');
     const resultsState = document.getElementById('resultsState');
+    const imageDisplayState = document.getElementById('imageDisplayState');
+    const scannerLine = document.getElementById('scannerLine');
+    const heatmapCanvas = document.getElementById('heatmapCanvas');
     
     // Result Elements
     const previewImage = document.getElementById('previewImage');
@@ -62,7 +65,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         emptyState.classList.add('hidden');
         resultsState.classList.add('hidden');
+        imageDisplayState.classList.remove('hidden');
+        scannerLine.classList.remove('hidden');
         loadingState.classList.remove('hidden');
+        heatmapCanvas.classList.remove('heatmap-reveal');
 
         try {
             // Apply simulator penalties if any (for realistic demo)
@@ -112,10 +118,12 @@ document.addEventListener('DOMContentLoaded', () => {
             previewImage.onload = () => {
                 if (window.drawHeatmap && result.defect_class !== 'Healthy' && result.defect_class !== 'Tomato_healthy') {
                     window.drawHeatmap(previewImage);
+                    heatmapCanvas.classList.add('heatmap-reveal');
                 }
             };
 
             // Switch views
+            scannerLine.classList.add('hidden');
             loadingState.classList.add('hidden');
             resultsState.classList.remove('hidden');
 
